@@ -45,9 +45,9 @@ export class ArticleController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post()
   async create(@User('id') userId: number, @Body('article') articleData: CreateArticleDto) {
-    const articleInJson =  this.articleService.create(userId, articleData);
-    const result = this.tagService.create(articleData.tagList);
-    return articleInJson;
+    // Ensure tags are created before the article is returned
+    await this.tagService.create(articleData.tagList);
+    return this.articleService.create(userId, articleData);
   }
 
   @ApiOperation({ summary: 'Update article' })
